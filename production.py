@@ -1,14 +1,17 @@
-import frappe
+#!/usr/bin/python
+
 import argparse
 import os
 import getpass
 import jinja2
+import shutil
 
 
 def main():
     dir_path = os.path.dirname(os.path.realpath(__file__))
     args=parse_args(dir_path)
-    supervisor_conf=get_supervisor_template(dir_path).render(**args.__dict__)
+    supervisor_conf=get_template(dir_path, 'supervisor.conf').render(**args.__dict__)
+    nginx_conf=get_template(dir_path, 'nginx.conf').render(**args.__dict__)
     print('Configuration variables:\n')
     for key, value in args.__dict__.items():
         print(key, ' : ', value)
@@ -17,6 +20,10 @@ def main():
     with open(supervisor_conf_path, "w") as text_file:
         print(f"{supervisor_conf}", file=text_file)
     print(f'\nGenerated {supervisor_conf_path}')
+    nginx_conf_path = os.path.join(dir_path, 'config', 'nginx.conf')
+    with open(nginx_conf_path, "w") as text_file:
+        print(f"{nginx_conf}", file=text_file)
+    print(f'\nGenerated {nginx_conf_path}')
 
 def parse_args(dir_path):
     parser = argparse.ArgumentParser(add_help=True)
@@ -27,7 +34,7 @@ def parse_args(dir_path):
         action='store',
         type=str,
         help='Name of bench',
-        default=dir_path[1:].replace('/', '-'),
+        default=dir_path[1:].lower().replace('/', '-'),
         required=False,
     )
 
@@ -103,13 +110,22 @@ def parse_args(dir_path):
         required=False,
     )
 
+    parser.add_argument(
+        '--node',
+        action="store",
+        type=str,
+        help='Node binary path',
+        default=shutil.which('node'),
+        required=False,
+    )
+
     return parser.parse_args()
 
 
-def get_supervisor_template(dir_path):
+def get_template(dir_path, template_file):
     template_loader = jinja2.FileSystemLoader(searchpath=os.path.join(dir_path, 'templates'))
     template_env = jinja2.Environment(loader=template_loader)
-    return template_env.get_template('supervisor.conf')
+    return template_env.get_template(template_file)
 
 
 if __name__ == "__main__":

@@ -41,4 +41,6 @@ sudo systemctl start mariadb.service
 ./env/bin/python production.py
 # Symlink supervisor.conf, example for Ubuntu, CentOS uses .ini file instead of .conf
 sudo ln -s `pwd`/config/supervisor.conf /etc/supervisor/conf.d/benchless.conf
+# Symlink nginx.conf
+sudo ln -s `pwd`/config/nginx.conf /etc/nginx/conf.d/benchless.conf
 ```

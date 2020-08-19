@@ -9,7 +9,7 @@ else
 fi
 
 # Create Python environment
-python -m venv env
+python3 -m venv env
 ./env/bin/python -m pip install --upgrade pip
 ./env/bin/pip install honcho
 echo -n "" > sites/apps.txt

@@ -6,10 +6,16 @@ import getpass
 import jinja2
 import shutil
 
+from frappe.utils import get_sites
+
 
 def main():
     dir_path = os.path.dirname(os.path.realpath(__file__))
     args=parse_args(dir_path)
+
+    if not args.sites:
+        args.sites = get_sites(os.path.join(dir_path, 'sites'))
+
     supervisor_conf=get_template(dir_path, 'supervisor.conf').render(**args.__dict__)
     nginx_conf=get_template(dir_path, 'nginx.conf').render(**args.__dict__)
     print('Configuration variables:\n')
@@ -117,6 +123,13 @@ def parse_args(dir_path):
         help='Node binary path',
         default=shutil.which('node'),
         required=False,
+    )
+
+    parser.add_argument(
+        '--site',
+        dest='sites',
+        action='append',
+        help='List of sites',
     )
 
     return parser.parse_args()

@@ -1,0 +1,15 @@
+{%- if start_redis %}
+redis_cache: redis-server --port {{ redis_cache_port }}
+redis_socketio: redis-server --port {{ redis_socketio_port }}
+redis_queue: redis-server --port {{ redis_queue_port }}
+{% endif %}
+socketio: {{ node }} apps/frappe/socketio.js
+
+web: ./benchless.py frappe serve --port {{ bench_port }}
+
+watch: ./benchless.py frappe watch
+
+schedule: ./benchless.py frappe schedule
+worker_short: ./benchless.py frappe worker --queue short
+worker_long: ./benchless.py frappe worker --queue long
+worker_default: ./benchless.py frappe worker --queue default

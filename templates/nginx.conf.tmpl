@@ -7,7 +7,7 @@ upstream socketio-server {
 }
 
 server {
-    listen 443 ssl;
+    listen {% if letsencrypt %}443 ssl{% else %}80{% endif %};
     server_name {% for site in sites %}
         {{ site }}{% endfor %};
 
@@ -117,10 +117,11 @@ server {
         text/x-component;
         # text/html is always compressed by HttpGzipModule
 }
-
+{% if letsencrypt %}
 server {
     listen 80;
     server_name {% for site in sites %}
         {{ site }}{% endfor %};
     return 301 https://$host$request_uri;
 }
+{% endif %}

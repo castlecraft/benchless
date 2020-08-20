@@ -1,5 +1,0 @@
-#!/bin/sh
-
-export script_dir="$(dirname "$0")"
-cd $script_dir/sites
-../env/bin/python ../apps/frappe/frappe/utils/bench_helper.py frappe "$@"
